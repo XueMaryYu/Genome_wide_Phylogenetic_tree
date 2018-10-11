@@ -1,3 +1,4 @@
 # ML tree building, download the software on linux and run the command lines
+sudo apt install raxml // install the software
 raxmlHPC -s concatenated_1.fasta -d 10 -m GTRCAT -n Test1 -p 1000
 raxmlHPC -s concatenated_p.fasta -d 10 -m BINGAMMA -n Testp -p 1000
