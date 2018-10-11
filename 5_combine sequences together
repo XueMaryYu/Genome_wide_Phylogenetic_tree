@@ -1,0 +1,9 @@
+fileList <- list.files("sort22/", full.names = TRUE)
+library(seqinr)
+fileContent <- lapply(fileList,function(file){read.fasta(file)})
+fileContent <- lapply(seq_len(6), function(y){
+  unlist(lapply(fileContent, function(x){unlist(x[[y]])}))
+})
+idNames <- c("bd1", "bbo2", "bmic3","pfa4","tot5","tpv6")
+names(fileContent) <-  idNames
+write.fasta(sequences = fileContent, names = idNames, file.out = "concatenated_1.fasta")
