@@ -1,0 +1,44 @@
+# (in R or R studio) try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("KEGGREST")
+library("KEGGREST")
+library("seqinr")
+# Reading the genome
+newprotein <- seqinr::read.fasta("Bdprotein.fasta")
+# Removing the comma at the end of the name
+names(newprotein) <- gsub(",$", "", names(newprotein))
+# Reading the IDs for all the 6 species
+maryConserved <- read.csv("maryConserved.txt", sep = "\t", stringsAsFactors = FALSE, header = FALSE)
+# Number of rows
+N <- nrow(maryConserved)
+# For each row
+for (i in 1:N){
+  # Extract the idss
+  idNew <- maryConserved[i,1]
+  ids <- c(gsub("[[:space:]]+", "", paste("bbo:",maryConserved[i,2])),
+  gsub("[[:space:]]+", "", paste("tpv:",maryConserved[i,3])),
+  gsub("[[:space:]]+", "", paste("tot:",maryConserved[i,4])),
+  gsub("[[:space:]]+", "", paste("pfa:",maryConserved[i,5])),
+  gsub("[[:space:]]+", "", paste("bmic:",maryConserved[i,6])))
+  # Download the sequences
+  sequences <- KEGGREST::keggGet(ids, "aaseq") // or netseq
+  # Clean the sequences
+  ids <- names(sequences)
+  if (length(ids) == 5){
+    aaSequences <- character()
+    for(sequence in 1:length(sequences)){
+      aaSequences[sequence] <- (as.character(sequences[[sequence]]))
+    }
+    # Add the sequence from the new genome
+    newSeq <- newprotein[as.character(idNew)]
+    newSeq <- toupper(paste0(unlist(newSeq),collapse = ""))
+    # Merging all the sequences together (new one, and the old ones)
+    aaSequences <- c(newSeq, aaSequences)
+    # Making a list
+    aaSequences <- as.list(aaSequences)
+    # Putting the names of the sequences
+    names(aaSequences) <- c(idNew, ids)
+    # Writing the file
+    seqinr::write.fasta(sequences = aaSequences, names = c(idNew, ids), file.out = paste0("maryFasta_p/g",i,".fasta"))
+  }
+}
