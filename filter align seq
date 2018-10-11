@@ -1,0 +1,8 @@
+# in linux computer
+# download the software using wget and uzip and add the software to the PATH
+export PATH="~/Desktop/phylogenetic_tree/trimAl/source:$PATH"
+# move the files to aln_p folder
+mv *aln.fast ../aln_p
+# run the program to trim the sequences. set up the parameters based on your needs 
+for file in aln_p/*.fast; do trimal -in $file -out ${file}_gr.fasta -gt 0.99 -cons 70; done 
+for file in aln_p/*.fast; do trimal -in $file -out ${file}_gr.fasta -nogaps; done 
