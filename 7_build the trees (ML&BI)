@@ -2,3 +2,13 @@
 sudo apt install raxml // install the software
 raxmlHPC -s concatenated_1.fasta -d 10 -m GTRCAT -n Test1 -p 1000
 raxmlHPC -s concatenated_p.fasta -d 10 -m BINGAMMA -n Testp -p 1000
+# BI tree building. It needs .nex file format. 
+mb // call Mr Bayes 
+execuate *.nex // load in the file you want to build tree from 
+set autoclose=yes // [tell the program to run automatically until the mcmc parameters are satisfied]
+prset aamodelpr=fixed(wag) // [set amino acid substitution model to WAG]
+lset rates=invgamma Ngammacat=4 // [set heterogeneity model to consider both invariance and gamma; set the rate for gamma distribution to 4. In your dataset, it’s better to set 16 or 32 rates, i.e., Ngammacat=16 or Ngammacat=32, depending the running time.]
+mcmcp ngen=1000000 printfreq=10000 samplefreq=100 nchains=4 savebrlens=yes// [Ask the program to run 1 million generations; screen display running status every 10000 of runs; save trees every 100 runs, so we will have 1001 saved trees; total running chains = 4]
+mcmc // run program 
+
+After run, visualize the tree using Figtree. 
